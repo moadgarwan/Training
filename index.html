@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Fitness & Diet Plan</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        body.rtl {
+            direction: rtl;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .language-selector {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: white;
+            border-radius: 10px;
+            padding: 5px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        body.rtl .language-selector {
+            right: auto;
+            left: 20px;
+        }
+        
+        .language-selector select {
+            padding: 8px 15px;
+            border: none;
+            background: transparent;
+            font-size: 1em;
+            cursor: pointer;
+            font-weight: bold;
+            color: #764ba2;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .stats {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .stat-item {
+            color: white;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .day-selector {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .day-selector label {
+            font-weight: bold;
+            color: #764ba2;
+            margin-right: 10px;
+        }
+        
+        body.rtl .day-selector label {
+            margin-right: 0;
+            margin-left: 10px;
+        }
+        
+        .day-selector select {
+            padding: 10px 20px;
+            border: 2px solid #764ba2;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .day-selector select:hover {
+            background: #f0f0ff;
+        }
+        
+        .day-content {
+            display: none;
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        .day-content.active {
+            display: block;
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            .language-selector {
+                top: 10px;
+                right: 10px;
+            }
+            body.rtl .language-selector {
+                right: auto;
+                left: 10px;
+            }
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #f0f0f0;
+        }
+        
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            margin-right: 15px;
+        }
+        
+        body.rtl .card-icon {
+            margin-right: 0;
+            margin-left: 15px;
+        }
+        
+        .workout-icon {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .meal-icon {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+        }
+        
+        .card-title {
+            font-size: 1.4em;
+            color: #333;
+            font-weight: bold;
+        }
+        
+        .workout-list {
+            list-style: none;
+        }
+        
+        .workout-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f5f5f5;
+            display: flex;
+            align-items: center;
+        }
+        
+        .workout-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .workout-list li:before {
+            content: "✓";
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        body.rtl .workout-list li:before {
+            margin-right: 0;
+            margin-left: 10px;
+        }
+        
+        .meal-section {
+            margin-bottom: 20px;
+        }
+        
+        .meal-time {
+            font-weight: bold;
+            color: #f5576c;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .meal-content {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #f5576c;
+        }
+        
+        body.rtl .meal-content {
+            border-left: none;
+            border-right: 4px solid #f5576c;
+        }
+        
+        .meal-item {
+            margin: 5px 0;
+            color: #555;
+        }
+        
+        .macros {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed #ddd;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        
+        .macro {
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        .macro span {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .burn-badge {
+            background: linear-gradient(135deg, #fa709a, #fee140);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-top: 15px;
+            display: inline-block;
+        }
+        
+        .daily-summary {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .summary-title {
+            color: #764ba2;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .summary-item {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .summary-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .summary-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        body.rtl @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="language-selector">
+        <select id="languageSelect" onchange="changeLanguage(this.value)">
+            <option value="en">🇬🇧 English</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="ar">🇸🇦 العربية</option>
+        </select>
+    </div>
+    
+    <div class="container">
+        <div class="header">
+            <h1 data-i18n="title">💪 My Fitness & Diet Plan</h1>
+            <p data-i18n="subtitle">Optimized Training & Nutrition Program</p>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-value">24</div>
+                <div class="stat-label" data-i18n="age">Age</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">102kg</div>
+                <div class="stat-label" data-i18n="weight">Weight</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">173cm</div>
+                <div class="stat-label" data-i18n="height">Height</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">2,253</div>
+                <div class="stat-label" data-i18n="dailyCalories">Daily Calories</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">225g</div>
+                <div class="stat-label" data-i18n="dailyProtein">Daily Protein</div>
+            </div>
+        </div>
+        
+        <div class="day-selector">
+            <label for="daySelect" data-i18n="selectDay">Select Day:</label>
+            <select id="daySelect" onchange="showDay(this.value)">
+                <!-- Options will be populated by JavaScript -->
+            </select>
+        </div>
+        
+        <!-- Day content divs will be populated by JavaScript -->
+        <div id="dayContent"></div>
+    </div>
+    
+    <script>
+        // Translations
+        const translations = {
+            en: {
+                title: "💪 My Fitness & Diet Plan",
+                subtitle: "Optimized Training & Nutrition Program",
+                age: "Age",
+                weight: "Weight",
+                height: "Height",
+                dailyCalories: "Daily Calories",
+                dailyProtein: "Daily Protein",
+                selectDay: "Select Day:",
+                days: {
+                    sunday: "Sunday - Rest Day",
+                    monday: "Monday - Chest Day",
+                    tuesday: "Tuesday - Cycling",
+                    wednesday: "Wednesday - Back Day",
+                    thursday: "Thursday - Running",
+                    friday: "Friday - Cycling",
+                    saturday: "Saturday - Legs Day"
+                },
+                restDay: "Rest Day",
+                chestDay: "Chest Day",
+                backDay: "Back Day",
+                legsDay: "Legs Day",
+                cycling: "Cycling",
+                running: "Running",
+                dailyMeals: "Daily Meals",
+                preTrainingMeal: "Pre-Training Meal",
+                sandwich: "Sandwich",
+                postTraining: "Post-Training",
+                calories: "Calories",
+                protein: "Protein",
+                carbs: "Carbs",
+                fat: "Fat",
+                dailyTotals: "Daily Totals",
+                totalCalories: "Total Calories",
+                totalProtein: "Total Protein",
+                totalCarbs: "Total Carbs",
+                totalFat: "Total Fat",
+                burn: "burn",
+                // Food items
+                yogurt: "Yogurt",
+                banana: "Banana",
+                wholeWheatBread: "Whole Wheat Bread",
+                boiledEggs: "Boiled Eggs",
+                orange: "Orange",
+                oliveOil: "Olive Oil",
+                chickenBreast: "Chicken Breast",
+                onion: "Onion",
+                leanBeef: "Lean Beef (95%)",
+                apple: "Apple",
+                tuna: "Tuna (in water)",
+                sardines: "Sardines (in brine)",
+                beefLiver: "Beef Liver",
+                // Exercises
+                completeRestDay: "Complete Rest Day",
+                normalWalking: "Minutes Normal Walking",
+                inclineWalking: "Minutes Incline Walking",
+                focusRecovery: "Focus on Recovery",
+                mealPrep: "Meal Prep for the Week",
+                cyclingSession: "Cycling Session",
+                runningSession: "Running"
+            },
+            fr: {
+                title: "💪 Mon Plan Fitness & Nutrition",
+                subtitle: "Programme d'Entraînement & Nutrition Optimisé",
+                age: "Âge",
+                weight: "Poids",
+                height: "Taille",
+                dailyCalories: "Calories Quotidiennes",
+                dailyProtein: "Protéines Quotidiennes",
+                selectDay: "Sélectionner le Jour:",
+                days: {
+                    sunday: "Dimanche - Jour de Repos",
+                    monday: "Lundi - Jour Poitrine",
+                    tuesday: "Mardi - Cyclisme",
+                    wednesday: "Mercredi - Jour Dos",
+                    thursday: "Jeudi - Course",
+                    friday: "Vendredi - Cyclisme",
+                    saturday: "Samedi - Jour Jambes"
+                },
+                restDay: "Jour de Repos",
+                chestDay: "Jour Poitrine",
+                backDay: "Jour Dos",
+                legsDay: "Jour Jambes",
+                cycling: "Cyclisme",
+                running: "Course",
+                dailyMeals: "Repas Quotidiens",
+                preTrainingMeal: "Repas Pré-Entraînement",
+                sandwich: "Sandwich",
+                postTraining: "Post-Entraînement",
+                calories: "Calories",
+                protein: "Protéines",
+                carbs: "Glucides",
+                fat: "Lipides",
+                dailyTotals: "Totaux Quotidiens",
+                totalCalories: "Calories Totales",
+                totalProtein: "Protéines Totales",
+                totalCarbs: "Glucides Totaux",
+                totalFat: "Lipides Totaux",
+                burn: "brûlées",
+                // Food items
+                yogurt: "Yaourt",
+                banana: "Banane",
+                wholeWheatBread: "Pain Complet",
+                boiledEggs: "Œufs Durs",
+                orange: "Orange",
+                oliveOil: "Huile d'Olive",
+                chickenBreast: "Poitrine de Poulet",
+                onion: "Oignon",
+                leanBeef: "Bœuf Maigre (95%)",
+                apple: "Pomme",
+                tuna: "Thon (à l'eau)",
+                sardines: "Sardines (en saumure)",
+                beefLiver: "Foie de Bœuf",
+                // Exercises
+                completeRestDay: "Jour de Repos Complet",
+                normalWalking: "Minutes de Marche Normale",
+                inclineWalking: "Minutes de Marche Inclinée",
+                focusRecovery: "Concentration sur la Récupération",
+                mealPrep: "Préparation des Repas de la Semaine",
+                cyclingSession: "Session de Cyclisme",
+                runningSession: "Course"
+            },
+            ar: {
+                title: "💪 خطة اللياقة والنظام الغذائي",
+                subtitle: "برنامج التدريب والتغذية المحسّن",
+                age: "العمر",
+                weight: "الوزن",
+                height: "الطول",
+                dailyCalories: "السعرات اليومية",
+                dailyProtein: "البروتين اليومي",
+                selectDay: "اختر اليوم:",
+                days: {
+                    sunday: "الأحد - يوم الراحة",
+                    monday: "الإثنين - يوم الصدر",
+                    tuesday: "الثلاثاء - ركوب الدراجة",
+                    wednesday: "الأربعاء - يوم الظهر",
+                    thursday: "الخميس - الجري",
+                    friday: "الجمعة - ركوب الدراجة",
+                    saturday: "السبت - يوم الأرجل"
+                },
+                restDay: "يوم الراحة",
+                chestDay: "يوم الصدر",
+                backDay: "يوم الظهر",
+                legsDay: "يوم الأرجل",
+                cycling: "ركوب الدراجة",
+                running: "الجري",
+                dailyMeals: "الوجبات اليومية",
+                preTrainingMeal: "وجبة ما قبل التدريب",
+                sandwich: "ساندويتش",
+                postTraining: "بعد التدريب",
+                calories: "السعرات",
+                protein: "البروتين",
+                carbs: "الكربوهيدرات",
+                fat: "الدهون",
+                dailyTotals: "المجاميع اليومية",
+                totalCalories: "إجمالي السعرات",
+                totalProtein: "إجمالي البروتين",
+                totalCarbs: "إجمالي الكربوهيدرات",
+                totalFat: "إجمالي الدهون",
+                burn: "حرق",
+                // Food items
+                yogurt: "زبادي",
+                banana: "موز",
+                wholeWheatBread: "خبز القمح الكامل",
+                boiledEggs: "بيض مسلوق",
+                orange: "برتقال",
+                oliveOil: "زيت زيتون",
+                chickenBreast: "صدر دجاج",
+                onion: "بصل",
+                leanBeef: "لحم بقري قليل الدهن (95%)",
+                apple: "تفاح",
+                tuna: "تونة (في الماء)",
+                sardines: "سردين (في محلول ملحي)",
+                beefLiver: "كبد بقري",
+                // Exercises
+                completeRestDay: "يوم راحة كامل",
+                normalWalking: "دقيقة مشي عادي",
+                inclineWalking: "دقيقة مشي منحدر",
+                focusRecovery: "التركيز على الاستشفاء",
+                mealPrep: "تحضير وجبات الأسبوع",
+                cyclingSession: "جلسة ركوب الدراجة",
+                runningSession: "الجري"
+            }
+        };
+
+        // Workout data
+        const workoutData = {
+            sunday: {
+                exercises: ["completeRestDay", "20 normalWalking", "focusRecovery", "mealPrep"],
+                burnCalories: 110
+            },
+            monday: {
+                exercises: [
+                    "Incline Dumbbell Press",
+                    "Dumbbell Bench Press",
+                    "Seated Dumbbell Shoulder Press",
+                    "Low Cable Fly",
+                    "Dumbbell Lateral Raise",
+                    "Close Grip Bench Press",
+                    "Rope Pushdown",
+                    "Rope Overhead Extension",
+                    "Hanging Knee Raise",
+                    "Decline Sit-ups",
+                    "15 inclineWalking"
+                ],
+                burnCalories: 500
+            },
+            tuesday: {
+                exercises: ["cyclingSession - 20km", "20 normalWalking"],
+                burnCalories: 660
+            },
+            wednesday: {
+                exercises: [
+                    "Wide Grip Overhand Pulldown",
+                    "Neutral Grip Pulldown",
+                    "Dumbbell Row",
+                    "Cable Row Natural Grip",
+                    "Face Pull Rope",
+                    "Bent Over Dumbbell Rear Delt Fly",
+                    "Standing Dumbbell Shrugs",
+                    "Incline Dumbbell Curl",
+                    "Hammer Curl neutral grip",
+                    "Reverse Curl EZ bar",
+                    "15 inclineWalking"
+                ],
+                burnCalories: 500
+            },
+            thursday: {
+                exercises: ["runningSession - 5km", "20 normalWalking"],
+                burnCalories: 560
+            },
+            friday: {
+                exercises: ["cyclingSession - 20km", "20 normalWalking"],
+                burnCalories: 660
+            },
+            saturday: {
+                exercises: [
+                    "Front Squats",
+                    "Romanian Deadlift",
+                    "Walking Lunges",
+                    "Seated Leg Curl",
+                    "Leg Extension",
+                    "Calf Raises",
+                    "15 inclineWalking"
+                ],
+                burnCalories: 550
+            }
+        };
+
+        // Meal data
+        const mealData = {
+            preMeal: {
+                items: ["80g yogurt", "100g banana"],
+                macros: { calories: 167, protein: 7.5, carbs: 30.5, fat: 2.7 }
+            },
+            sandwich1: {
+                items: ["110g wholeWheatBread", "4 boiledEggs", "100g orange", "5g oliveOil"],
+                macros: { calories: 665, protein: 39.9, carbs: 63.2, fat: 29.6 }
+            },
+            sandwich2: {
+                items: ["110g wholeWheatBread", "300g chickenBreast", "50g onion", "5g oliveOil"],
+                macros: { calories: 823, protein: 106.5, carbs: 53.7, fat: 18.85 }
+            },
+            sandwich3: {
+                sunday: {
+                    items: ["110g wholeWheatBread", "200g beefLiver", "100g apple", "5g oliveOil"],
+                    macros: { calories: 630, protein: 54.7, carbs: 70.8, fat: 16.1 },
+                    proteinType: "beefLiver"
+                },
+                monday: {
+                    items: ["110g wholeWheatBread", "250g leanBeef", "100g apple", "5g oliveOil"],
+                    macros: { calories: 697, protein: 75.8, carbs: 63, fat: 21 },
+                    proteinType: "leanBeef"
+                },
+                tuesday: {
+                    items: ["110g wholeWheatBread", "220g tuna", "100g apple", "5g oliveOil"],
+                    macros: { calories: 598, protein: 71.2, carbs: 63.5, fat: 9 },
+                    proteinType: "tuna"
+                },
+                wednesday: {
+                    items: ["110g wholeWheatBread", "250g leanBeef", "100g apple", "5g oliveOil"],
+                    macros: { calories: 697, protein: 75.8, carbs: 63, fat: 21 },
+                    proteinType: "leanBeef"
+                },
+                thursday: {
+                    items: ["110g wholeWheatBread", "180g sardines", "100g apple", "5g oliveOil"],
+                    macros: { calories: 628, protein: 59.6, carbs: 63.5, fat: 17.4 },
+                    proteinType: "sardines"
+                },
+                friday: {
+                    items: ["110g wholeWheatBread", "220g tuna", "100g apple", "5g oliveOil"],
+                    macros: { calories: 598, protein: 71.2, carbs: 63.5, fat: 9 },
+                    proteinType: "tuna"
+                },
+                saturday: {
+                    items: ["110g wholeWheatBread", "250g leanBeef", "100g apple", "5g oliveOil"],
+                    macros: { calories: 697, protein: 75.8, carbs: 63, fat: 21 },
+                    proteinType: "leanBeef"
+                }
+            }
+        };
+
+        let currentLang = 'en';
+
+        // Function to detect browser language
+        function detectBrowserLanguage() {
+            const browserLang = navigator.language || navigator.userLanguage;
+            const langCode = browserLang.substring(0, 2).toLowerCase();
+            
+            if (langCode === 'fr') return 'fr';
+            if (langCode === 'ar') return 'ar';
+            return 'en'; // Default to English
+        }
+
+        // Function to change language
+        function changeLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('preferredLanguage', lang);
+            
+            // Update body class for RTL
+            if (lang === 'ar') {
+                document.body.classList.add('rtl');
+                document.documentElement.setAttribute('lang', 'ar');
+            } else {
+                document.body.classList.remove('rtl');
+                document.documentElement.setAttribute('lang', lang);
+            }
+            
+            updatePageContent();
+            updateDaySelector();
+            
+            // Update current displayed day
+            const currentDay = document.getElementById('daySelect').value;
+            if (currentDay) {
+                showDay(currentDay);
+            }
+        }
+
+        // Function to translate text
+        function t(key, ...params) {
+            const keys = key.split('.');
+            let value = translations[currentLang];
+            
+            for (const k of keys) {
+                value = value[k];
+                if (!value) return key;
+            }
+            
+            // Replace parameters if any
+            if (params.length > 0) {
+                return value.replace(/\{(\d+)\}/g, (match, index) => params[index] || match);
+            }
+            
+            return value;
+        }
+
+        // Update page content
+        function updatePageContent() {
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                element.textContent = t(key);
+            });
+        }
+
+        // Update day selector
+        function updateDaySelector() {
+            const daySelect = document.getElementById('daySelect');
+            const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+            
+            daySelect.innerHTML = '';
+            days.forEach(day => {
+                const option = document.createElement('option');
+                option.value = day;
+                option.textContent = t(`days.${day}`);
+                daySelect.appendChild(option);
+            });
+        }
+
+        // Function to get translated exercise
+        function getTranslatedExercise(exercise) {
+            // Check if it's a translatable exercise
+            if (exercise.includes('normalWalking')) {
+                const minutes = exercise.split(' ')[0];
+                return `${minutes} ${t('normalWalking')}`;
+            }
+            if (exercise.includes('inclineWalking')) {
+                const minutes = exercise.split(' ')[0];
+                return `${minutes} ${t('inclineWalking')}`;
+            }
+            if (exercise === 'completeRestDay') return t('completeRestDay');
+            if (exercise === 'focusRecovery') return t('focusRecovery');
+            if (exercise === 'mealPrep') return t('mealPrep');
+            if (exercise.includes('cyclingSession')) {
+                return `${t('cyclingSession')}${exercise.includes('20km') ? ' - 20km' : ''}`;
+            }
+            if (exercise.includes('runningSession')) {
+                return `${t('runningSession')}${exercise.includes('5km') ? ' - 5km' : ''}`;
+            }
+            
+            // Return as is for specific exercise names
+            return exercise;
+        }
+
+        // Function to get translated food item
+        function getTranslatedFoodItem(item) {
+            const foodMap = {
+                'yogurt': 'yogurt',
+                'banana': 'banana',
+                'wholeWheatBread': 'wholeWheatBread',
+                'boiledEggs': 'boiledEggs',
+                'orange': 'orange',
+                'oliveOil': 'oliveOil',
+                'chickenBreast': 'chickenBreast',
+                'onion': 'onion',
+                'leanBeef': 'leanBeef',
+                'apple': 'apple',
+                'tuna': 'tuna',
+                'sardines': 'sardines',
+                'beefLiver': 'beefLiver'
+            };
+            
+            for (const [key, value] of Object.entries(foodMap)) {
+                if (item.toLowerCase().includes(key.toLowerCase())) {
+                    const quantity = item.match(/\d+g?/);
+                    return `• ${quantity ? quantity[0] + ' ' : ''}${t(value)}`;
+                }
+            }
+            
+            return `• ${item}`;
+        }
+
+        // Function to show selected day
+        function showDay(day) {
+            const dayContent = document.getElementById('dayContent');
+            const dayTitle = getDayTitle(day);
+            const workout = workoutData[day];
+            const meals = getMealsForDay(day);
+            const dailyTotals = calculateDailyTotals(meals);
+            
+            dayContent.innerHTML = `
+                <div class="day-content active">
+                    <div class="content-grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-icon workout-icon">${getDayIcon(day)}</div>
+                                <div class="card-title">${dayTitle}</div>
+                            </div>
+                            <ul class="workout-list">
+                                ${workout.exercises.map(ex => 
+                                    `<li>${getTranslatedExercise(ex)}</li>`
+                                ).join('')}
+                            </ul>
+                            <div class="burn-badge">🔥 ${workout.burnCalories} kcal ${t('burn')}</div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-icon meal-icon">🍽️</div>
+                                <div class="card-title">${t('dailyMeals')}</div>
+                            </div>
+                            
+                            ${generateMealSection('preTrainingMeal', meals.preMeal)}
+                            ${generateMealSection('sandwich', meals.sandwich1, '1', 'postTraining')}
+                            ${generateMealSection('sandwich', meals.sandwich2, '2')}
+                            ${generateMealSection('sandwich', meals.sandwich3, '3', null, meals.sandwich3.proteinIcon)}
+                        </div>
+                    </div>
+                    
+                    <div class="daily-summary">
+                        <div class="summary-title">📊 ${t('dailyTotals')}</div>
+                        <div class="summary-grid">
+                            <div class="summary-item">
+                                <div class="summary-value">${dailyTotals.calories}</div>
+                                <div class="summary-label">${t('totalCalories')}</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-value">${dailyTotals.protein}g</div>
+                                <div class="summary-label">${t('totalProtein')}</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-value">${dailyTotals.carbs}g</div>
+                                <div class="summary-label">${t('totalCarbs')}</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-value">${dailyTotals.fat}g</div>
+                                <div class="summary-label">${t('totalFat')}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Function to get day title
+        function getDayTitle(day) {
+            return t(`days.${day}`);
+        }
+
+        // Function to get day icon
+        function getDayIcon(day) {
+            const icons = {
+                sunday: '🌟',
+                monday: '💪',
+                tuesday: '🚴',
+                wednesday: '🏋️',
+                thursday: '🏃',
+                friday: '🚴',
+                saturday: '🦵'
+            };
+            return icons[day] || '💪';
+        }
+
+        // Function to get meals for day
+        function getMealsForDay(day) {
+            const sandwich3Data = mealData.sandwich3[day];
+            const proteinIcons = {
+                beefLiver: '🍖',
+                leanBeef: '🥩',
+                tuna: '🐟',
+                sardines: '🐟'
+            };
+            
+            return {
+                preMeal: mealData.preMeal,
+                sandwich1: mealData.sandwich1,
+                sandwich2: mealData.sandwich2,
+                sandwich3: {
+                    ...sandwich3Data,
+                    proteinIcon: proteinIcons[sandwich3Data.proteinType] || ''
+                }
+            };
+        }
+
+        // Function to generate meal section
+        function generateMealSection(title, meal, number = '', subtitle = '', icon = '') {
+            const mealTitle = number ? `${t(title)} ${number}` : t(title);
+            const fullTitle = subtitle ? `${mealTitle} (${t(subtitle)})` : mealTitle;
+            const titleWithIcon = icon ? `${fullTitle} ${icon}` : fullTitle;
+            
+            return `
+                <div class="meal-section">
+                    <div class="meal-time">${titleWithIcon}</div>
+                    <div class="meal-content">
+                        ${meal.items.map(item => getTranslatedFoodItem(item)).join('\n')}
+                        <div class="macros">
+                            <span class="macro">${t('calories')}: <span>${meal.macros.calories}</span></span>
+                            <span class="macro">${t('protein')}: <span>${meal.macros.protein}g</span></span>
+                            <span class="macro">${t('carbs')}: <span>${meal.macros.carbs}g</span></span>
+                            <span class="macro">${t('fat')}: <span>${meal.macros.fat}g</span></span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Function to calculate daily totals
+        function calculateDailyTotals(meals) {
+            const totals = {
+                calories: 0,
+                protein: 0,
+                carbs: 0,
+                fat: 0
+            };
+            
+            Object.values(meals).forEach(meal => {
+                if (meal.macros) {
+                    totals.calories += meal.macros.calories;
+                    totals.protein += meal.macros.protein;
+                    totals.carbs += meal.macros.carbs;
+                    totals.fat += meal.macros.fat;
+                }
+            });
+            
+            return {
+                calories: Math.round(totals.calories),
+                protein: totals.protein.toFixed(1),
+                carbs: totals.carbs.toFixed(1),
+                fat: totals.fat.toFixed(1)
+            };
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check for saved language preference
+            const savedLang = localStorage.getItem('preferredLanguage');
+            const browserLang = detectBrowserLanguage();
+            const initialLang = savedLang || browserLang;
+            
+            // Set language selector
+            document.getElementById('languageSelect').value = initialLang;
+            
+            // Initialize with detected/saved language
+            changeLanguage(initialLang);
+            
+            // Get current day and show it
+            const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+            const today = new Date().getDay();
+            const currentDay = days[today];
+            
+            document.getElementById('daySelect').value = currentDay;
+            showDay(currentDay);
+        });
+    </script>
+</body>
+</html>
